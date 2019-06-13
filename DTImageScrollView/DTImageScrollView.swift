@@ -18,13 +18,13 @@ public protocol DTImageScrollViewDatasource: class {
 
 open class DTImageScrollView: UIView, UIScrollViewDelegate {
 
-    open let scrollView = UIScrollView()
-    open let pageControl = UIPageControl()
-    open var imageViews = [UIImageView]()
+    public let scrollView = UIScrollView()
+    public let pageControl = UIPageControl()
+    public var imageViews = [UIImageView]()
     
-    open weak var datasource: DTImageScrollViewDatasource?
+    public weak var datasource: DTImageScrollViewDatasource?
     
-    open func show() {
+    public func show() {
         setup()
     }
     
@@ -49,7 +49,7 @@ open class DTImageScrollView: UIView, UIScrollViewDelegate {
         reloadPhotos()
     }
     
-    open func reloadPhotos() {
+    public func reloadPhotos() {
         // remove old ImageViews (if any)
         for view in self.scrollView.subviews {
             view.removeFromSuperview()
@@ -98,7 +98,7 @@ open class DTImageScrollView: UIView, UIScrollViewDelegate {
         // layoutIfNeeded()
     }
     
-    open func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+    public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         // update pageController
         let pageWidth = scrollView.frame.size.width
         let fractionalPage = Float(scrollView.contentOffset.x / pageWidth)
