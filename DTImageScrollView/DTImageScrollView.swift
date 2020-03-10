@@ -105,6 +105,13 @@ open class DTImageScrollView: UIView, UIScrollViewDelegate {
         let page = Int(roundf(fractionalPage))
         self.pageControl.currentPage = page
     }
+    
+    public func scrollToImageAt(_ index: Int) {
+        let pageWidth = Double(scrollView.frame.size.width)
+        let pageX = pageWidth * Double(index)
+        self.scrollView.setContentOffset(CGPoint(x: pageX, y: 0.0), animated: false)
+    }
+    
 }
 
 
