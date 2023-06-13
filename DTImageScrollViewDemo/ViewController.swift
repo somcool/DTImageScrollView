@@ -7,8 +7,9 @@
 //
 
 import UIKit
+import AlamofireImage
 
-class ViewController: UIViewController, DTImageScrollViewDatasource {
+class ViewController: UIViewController {
 
     @IBOutlet weak var imageScrollView: DTImageScrollView!
     
@@ -18,21 +19,25 @@ class ViewController: UIViewController, DTImageScrollViewDatasource {
         self.imageScrollView.datasource = self
         self.imageScrollView.show()
     }
+}
 
-    func numberOfImages() -> Int {
-        return 3
-    }
+// MARK: - DTImageScrollViewDatasource
+
+extension ViewController: DTImageScrollViewDatasource {
     
-    func imageURL(index: Int) -> URL {
-        return URL(string: "http://www.boxzeed.com/wp-content/uploads/2015/09/1.1.3.jpg")!
-    }
-    
-    func placeholderImageFor(index:Int) -> UIImage {
+    func imageScrollView(imageScrollView: DTImageScrollView, placeholderImageFor index: Int) -> UIImage {
         if index == 0 {
             return UIImage(named: "sample")!
         } else {
             return UIImage(named: "placeholder3")!
         }
     }
+    
+    func imageScrollView(imageScrollView: DTImageScrollView, imageURLAt index: Int) -> URL {
+        return URL(string: "http://www.boxzeed.com/wp-content/uploads/2015/09/1.1.3.jpg")!
+    }
+    
+    func numberOfImages(in imageScrollView: DTImageScrollView) -> Int {
+        return 3
+    }
 }
-

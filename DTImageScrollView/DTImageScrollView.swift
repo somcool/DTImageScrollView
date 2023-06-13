@@ -9,11 +9,28 @@
 import UIKit
 import AlamofireImage
 
-public protocol DTImageScrollViewDatasource: class {
-    //func imageForIndex(index:Int) -> UIImage
-    func imageURL(index:Int) -> URL
-    func numberOfImages() -> Int
-    func placeholderImageFor(index:Int) -> UIImage
+public protocol DTImageScrollViewDatasource: AnyObject {
+    func imageScrollView(imageScrollView: DTImageScrollView, imageURLAt index: Int) -> URL
+    func numberOfImages(in imageScrollView: DTImageScrollView) -> Int
+    func imageScrollView(imageScrollView: DTImageScrollView, placeholderImageFor index: Int) -> UIImage
+    
+    func imageScrollView(imageScrollView: DTImageScrollView, filterImageAt index: Int) -> ImageFilter?
+    func imageScrollView(imageScrollView: DTImageScrollView, willScrollTo index: Int)
+    func imageScrollView(imageScrollView: DTImageScrollView, didScrollTo index: Int)
+}
+
+extension DTImageScrollViewDatasource {
+    func imageScrollView(imageScrollView: DTImageScrollView, filterImageAt index: Int) -> ImageFilter? {
+        return nil
+    }
+    
+    func imageScrollView(imageScrollView: DTImageScrollView, willScrollTo index: Int) {
+        
+    }
+    
+    func imageScrollView(imageScrollView: DTImageScrollView, didScrollTo index: Int) {
+        
+    }
 }
 
 open class DTImageScrollView: UIView, UIScrollViewDelegate {
@@ -57,14 +74,18 @@ open class DTImageScrollView: UIView, UIScrollViewDelegate {
         self.imageViews.removeAll()
         
         // add photos to scrollView
-        for index in 0..<self.datasource!.numberOfImages() {
+        for index in 0..<self.datasource!.numberOfImages(in: self) {
             let imageView = UIImageView()
             imageView.tag = index+1
             imageView.contentMode = .scaleAspectFill
             imageView.clipsToBounds = true
             imageView.translatesAutoresizingMaskIntoConstraints = false
-            imageView.image = self.datasource!.placeholderImageFor(index: index)
-            imageView.af_setImage(withURL: self.datasource!.imageURL(index: index))
+            
+            
+            imageView.image = self.datasource!.imageScrollView(imageScrollView: self, placeholderImageFor: index)
+            let url = self.datasource!.imageScrollView(imageScrollView: self, imageURLAt: index)
+            let filter = self.datasource!.imageScrollView(imageScrollView: self, filterImageAt: index)
+            imageView.af_setImage(withURL: url, filter: filter)
             self.scrollView.addSubview(imageView)
             self.imageViews.append(imageView)
             
@@ -85,14 +106,14 @@ open class DTImageScrollView: UIView, UIScrollViewDelegate {
                 let previouseImageView = self.viewWithTag(index)!
                 self.scrollView.addConstraint(NSLayoutConstraint(item: previouseImageView, attribute: .right, relatedBy: .equal, toItem: imageView, attribute: .left, multiplier: 1, constant: 0))
             }
-            if index == self.datasource!.numberOfImages()-1 {
+            if index == self.datasource!.numberOfImages(in: self)-1 {
                 // right to scrollview
                 self.scrollView.addConstraint(NSLayoutConstraint(item: self.scrollView, attribute: .right, relatedBy: .equal, toItem: imageView, attribute: .right, multiplier: 1, constant: 0))
             }
         }
         
         // update page control
-        self.pageControl.numberOfPages = self.datasource!.numberOfImages()
+        self.pageControl.numberOfPages = self.datasource!.numberOfImages(in: self) 
         self.pageControl.currentPage = 0
         
         // layoutIfNeeded()
