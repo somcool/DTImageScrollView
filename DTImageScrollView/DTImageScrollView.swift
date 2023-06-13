@@ -9,28 +9,11 @@
 import UIKit
 import AlamofireImage
 
-public protocol DTImageScrollViewDatasource: AnyObject {
-    func imageScrollView(imageScrollView: DTImageScrollView, imageURLAt index: Int) -> URL
+@objc public protocol DTImageScrollViewDatasource: AnyObject {
     func numberOfImages(in imageScrollView: DTImageScrollView) -> Int
-    func imageScrollView(imageScrollView: DTImageScrollView, placeholderImageFor index: Int) -> UIImage
-    
-    func imageScrollView(imageScrollView: DTImageScrollView, filterImageAt index: Int) -> ImageFilter?
-    func imageScrollView(imageScrollView: DTImageScrollView, willScrollTo index: Int)
-    func imageScrollView(imageScrollView: DTImageScrollView, didScrollTo index: Int)
-}
-
-public extension DTImageScrollViewDatasource {
-    func imageScrollView(imageScrollView: DTImageScrollView, filterImageAt index: Int) -> ImageFilter? {
-        return nil
-    }
-    
-    func imageScrollView(imageScrollView: DTImageScrollView, willScrollTo index: Int) {
-        
-    }
-    
-    func imageScrollView(imageScrollView: DTImageScrollView, didScrollTo index: Int) {
-        
-    }
+    func imageScrollView(imageScrollView: DTImageScrollView, configurePhotoAt index: Int, withImageView imageView: UIImageView)
+    @objc optional func imageScrollViewWillScroll(imageScrollView: DTImageScrollView)
+    @objc optional func imageScrollView(imageScrollView: DTImageScrollView, didScrollTo index: Int)
 }
 
 open class DTImageScrollView: UIView, UIScrollViewDelegate {
@@ -80,12 +63,7 @@ open class DTImageScrollView: UIView, UIScrollViewDelegate {
             imageView.contentMode = .scaleAspectFill
             imageView.clipsToBounds = true
             imageView.translatesAutoresizingMaskIntoConstraints = false
-            
-            
-            imageView.image = self.datasource!.imageScrollView(imageScrollView: self, placeholderImageFor: index)
-            let url = self.datasource!.imageScrollView(imageScrollView: self, imageURLAt: index)
-            let filter = self.datasource!.imageScrollView(imageScrollView: self, filterImageAt: index)
-            imageView.af_setImage(withURL: url, filter: filter)
+            self.datasource?.imageScrollView(imageScrollView: self, configurePhotoAt: index, withImageView: imageView)
             self.scrollView.addSubview(imageView)
             self.imageViews.append(imageView)
             
@@ -118,6 +96,9 @@ open class DTImageScrollView: UIView, UIScrollViewDelegate {
         
         // layoutIfNeeded()
     }
+    public func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        self.datasource?.imageScrollViewWillScroll?(imageScrollView: self)
+    }
     
     public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         // update pageController
@@ -125,11 +106,14 @@ open class DTImageScrollView: UIView, UIScrollViewDelegate {
         let fractionalPage = Float(scrollView.contentOffset.x / pageWidth)
         let page = Int(roundf(fractionalPage))
         self.pageControl.currentPage = page
+        self.datasource?.imageScrollView?(imageScrollView: self, didScrollTo: page)
     }
     
     public func scrollToImageAt(_ index: Int) {
         let pageWidth = Double(scrollView.frame.size.width)
         let pageX = pageWidth * Double(index)
+        self.pageControl.currentPage = index
+        self.datasource?.imageScrollView?(imageScrollView: self, didScrollTo: index)
         self.scrollView.setContentOffset(CGPoint(x: pageX, y: 0.0), animated: false)
     }
     

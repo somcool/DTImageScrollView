@@ -24,19 +24,12 @@ class ViewController: UIViewController {
 // MARK: - DTImageScrollViewDatasource
 
 extension ViewController: DTImageScrollViewDatasource {
-    
-    func imageScrollView(imageScrollView: DTImageScrollView, placeholderImageFor index: Int) -> UIImage {
-        if index == 0 {
-            return UIImage(named: "sample")!
-        } else {
-            return UIImage(named: "placeholder3")!
-        }
+    func imageScrollView(imageScrollView: DTImageScrollView, configurePhotoAt index: Int, withImageView imageView: UIImageView) {
+        let placeholderImage = index == 0 ? UIImage(named: "sample")! : UIImage(named: "placeholder3")!
+        let url = URL(string: "http://www.boxzeed.com/wp-content/uploads/2015/09/1.1.3.jpg")!
+        imageView.af_setImage(withURL: url, placeholderImage: placeholderImage)
     }
-    
-    func imageScrollView(imageScrollView: DTImageScrollView, imageURLAt index: Int) -> URL {
-        return URL(string: "http://www.boxzeed.com/wp-content/uploads/2015/09/1.1.3.jpg")!
-    }
-    
+
     func numberOfImages(in imageScrollView: DTImageScrollView) -> Int {
         return 3
     }
