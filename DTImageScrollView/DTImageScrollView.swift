@@ -19,7 +19,7 @@ public protocol DTImageScrollViewDatasource: AnyObject {
     func imageScrollView(imageScrollView: DTImageScrollView, didScrollTo index: Int)
 }
 
-extension DTImageScrollViewDatasource {
+public extension DTImageScrollViewDatasource {
     func imageScrollView(imageScrollView: DTImageScrollView, filterImageAt index: Int) -> ImageFilter? {
         return nil
     }
